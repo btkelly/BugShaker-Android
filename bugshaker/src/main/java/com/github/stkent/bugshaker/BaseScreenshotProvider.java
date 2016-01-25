@@ -20,16 +20,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.v4.content.FileProvider;
 import android.view.View;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+
+import rx.Observable;
+import rx.schedulers.Schedulers;
 
 abstract class BaseScreenshotProvider implements ScreenshotProvider {
 
@@ -45,58 +42,58 @@ abstract class BaseScreenshotProvider implements ScreenshotProvider {
         this.applicationContext = applicationContext;
     }
 
-    abstract void getScreenshotBitmap(
-            @NonNull final Activity activity,
-            @NonNull final ScreenshotBitmapCallback callback);
+    @NonNull
+    abstract Observable<Bitmap> getScreenshotBitmap(@NonNull final Activity activity);
 
     @Override
     public final void getScreenshotUri(
             @NonNull final Activity activity,
             @NonNull final ScreenshotUriCallback callback) {
 
-        getScreenshotBitmap(activity, new ScreenshotBitmapCallback() {
-            @Override
-            public void onSuccess(@NonNull final Bitmap screenshotBitmap) {
-                OutputStream fileOutputStream = null;
+        getScreenshotBitmap(activity)// todo: stuff here
 
-                try {
-                    final File screenshotFile = getScreenshotFile();
-
-                    fileOutputStream = new BufferedOutputStream(new FileOutputStream(screenshotFile));
-                    screenshotBitmap.compress(
-                            Bitmap.CompressFormat.JPEG, JPEG_COMPRESSION_QUALITY, fileOutputStream);
-
-                    fileOutputStream.flush();
-
-                    Logger.d("Screenshot successfully saved to file: " + screenshotFile.getAbsolutePath());
-
-                    final Uri result = FileProvider.getUriForFile(
-                            applicationContext,
-                            applicationContext.getPackageName() + AUTHORITY_SUFFIX,
-                            screenshotFile);
-
-                    Logger.d("URI for screenshot file successfully created: " + result);
-
-                    callback.onSuccess(result);
-                } catch (final IOException e) {
-                    Logger.printStackTrace(e);
-                    callback.onFailure();
-                } finally {
-                    if (fileOutputStream != null) {
-                        try {
-                            fileOutputStream.close();
-                        } catch (final IOException e) {
-                            // We did our best...
-                            Logger.printStackTrace(e);
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure() {
-                callback.onFailure();
-            }
+//            @Override
+//            public void onSuccess(@NonNull final Bitmap screenshotBitmap) {
+//                OutputStream fileOutputStream = null;
+//
+//                try {
+//                    final File screenshotFile = getScreenshotFile();
+//
+//                    fileOutputStream = new BufferedOutputStream(new FileOutputStream(screenshotFile));
+//                    screenshotBitmap.compress(
+//                            Bitmap.CompressFormat.JPEG, JPEG_COMPRESSION_QUALITY, fileOutputStream);
+//
+//                    fileOutputStream.flush();
+//
+//                    Logger.d("Screenshot successfully saved to file: " + screenshotFile.getAbsolutePath());
+//
+//                    final Uri result = FileProvider.getUriForFile(
+//                            applicationContext,
+//                            applicationContext.getPackageName() + AUTHORITY_SUFFIX,
+//                            screenshotFile);
+//
+//                    Logger.d("URI for screenshot file successfully created: " + result);
+//
+//                    callback.onSuccess(result);
+//                } catch (final IOException e) {
+//                    Logger.printStackTrace(e);
+//                    callback.onFailure();
+//                } finally {
+//                    if (fileOutputStream != null) {
+//                        try {
+//                            fileOutputStream.close();
+//                        } catch (final IOException e) {
+//                            // We did our best...
+//                            Logger.printStackTrace(e);
+//                        }
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure() {
+//                callback.onFailure();
+//            }
         });
     }
 

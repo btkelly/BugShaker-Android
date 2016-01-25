@@ -23,12 +23,12 @@ import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.OnMapReadyCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import rx.Observable;
 
 final class MapScreenshotProvider extends BaseScreenshotProvider {
 
@@ -36,34 +36,32 @@ final class MapScreenshotProvider extends BaseScreenshotProvider {
         super(applicationContext);
     }
 
+    @NonNull
     @Override
-    protected void getScreenshotBitmap(
-            @NonNull final Activity activity,
-            @NonNull final ScreenshotBitmapCallback callback) {
-
-        final View view = getRootView(activity);
-        final List<MapView> mapViews = locateMapViewsInHierarchy(view);
-
-        if (mapViews.isEmpty()) {
-            try {
-                callback.onSuccess(createBitmapOfNonMapViews(activity));
-            } catch (final InvalidActivitySizeException e) {
-                Logger.printStackTrace(e);
-                callback.onFailure();
-            }
-        } else {
-            mapViews.get(0).getMapAsync(new OnMapReadyCallback() {
-                @Override
-                public void onMapReady(final GoogleMap googleMap) {
-                    googleMap.snapshot(new GoogleMap.SnapshotReadyCallback() {
-                        @Override
-                        public void onSnapshotReady(final Bitmap bitmap) {
-                            callback.onSuccess(bitmap);
-                        }
-                    });
-                }
-            });
-        }
+    protected Observable<Bitmap> getScreenshotBitmap(@NonNull final Activity activity) {
+//        final View view = getRootView(activity);
+//        final List<MapView> mapViews = locateMapViewsInHierarchy(view);
+//
+//        if (mapViews.isEmpty()) {
+//            try {
+//                callback.onSuccess(createBitmapOfNonMapViews(activity));
+//            } catch (final InvalidActivitySizeException e) {
+//                Logger.printStackTrace(e);
+//                callback.onFailure();
+//            }
+//        } else {
+//            mapViews.get(0).getMapAsync(new OnMapReadyCallback() {
+//                @Override
+//                public void onMapReady(final GoogleMap googleMap) {
+//                    googleMap.snapshot(new GoogleMap.SnapshotReadyCallback() {
+//                        @Override
+//                        public void onSnapshotReady(final Bitmap bitmap) {
+//                            callback.onSuccess(bitmap);
+//                        }
+//                    });
+//                }
+//            });
+//        }
     }
 
     @NonNull
